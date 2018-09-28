@@ -20,7 +20,8 @@ var UIController = (function() {
     var DOMstrings = {      // private, so be able to update the things at once
         inputType: '.add__type',
         inputDescription: '.add__description',
-        inputValue: '.add__value'
+        inputValue: '.add__value',
+        inputBtn: '.add__btn',
 
     }
     return {
@@ -39,9 +40,20 @@ var UIController = (function() {
 
 // app controller
 var appController = (function(BC, UC) {
-    var DOM = UC.getDOMstrings();
 
-    var ctrlAddItem = function() {
+    var setupEventListeners = function() {      // private func.
+        var DOM = UC.getDOMstrings();
+
+        document.querySelector(DOM.inputBtn).addEventListener('click', ctrlAddItem)
+
+        document.addEventListener('keypress', function(event) {
+            if (event.keyCode === 13 || event.which === 13) {  // keycode를 받아올 때, 브라우저별로 event.KeyCode가 안될 수 있어서 event.which 를 같이 써 줘서 모든 브라우저에서 13을 인식 할 수 있게 함.
+                ctrlAddItem();
+            }
+        });
+    }
+
+    var ctrlAddItem = function() {      // private func.
         // 1. get the input data
         var input = UC.getInput();
         console.log(input);
@@ -49,14 +61,15 @@ var appController = (function(BC, UC) {
         // 3. add the item to the UI
         // 4. calculate budget
         // 5. display the budget on UI
-        console.log("yeah");
     }
 
-    document.querySelector('.add__btn').addEventListener('click', ctrlAddItem)
-
-    document.addEventListener('keypress', function(event) {
-        if (event.keyCode === 13 || event.which === 13) {  // keycode를 받아올 때, 브라우저별로 event.KeyCode가 안될 수 있어서 event.which 를 같이 써 줘서 모든 브라우저에서 13을 인식 할 수 있게 함.
-            ctrlAddItem();
+    return {
+        init: function() {
+            console.log('앱 시작됨');
+            setupEventListeners();
         }
-    });
+    }
 })(budgetController, UIController);
+
+
+appController.init();
