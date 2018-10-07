@@ -26,12 +26,12 @@ var budgetController = (function() {
 
     var data = {
         allItems: {
-            exp: [],
-            inc: []
+            expenses: [],
+            income: []
         },
         totals: {
-            exp: 0,
-            inc: 0
+            expenses: 0,
+            income: 0
         }
     }
 
@@ -45,7 +45,7 @@ var budgetController = (function() {
             }
             
 
-            if (type === 'expense') {
+            if (type === 'expenses') {
                 newItem = new Expense(ID, des, val);
             } else if (type === 'income') {
                 newItem = new Income(ID, des, val);
@@ -69,6 +69,9 @@ var UIController = (function() {
         inputDescription: '.add__description',
         inputValue: '.add__value',
         inputBtn: '.add__btn',
+        incomeContainer: '.income__list',
+        expensesContainer: '.expenses__list',
+
 
     }
     return {
@@ -80,15 +83,21 @@ var UIController = (function() {
             };  
         },
         addListItem: function(obj, type) {
-            var html;
+            var html, newHtml, element;
 
             if (type === 'income') {
+                element = DOMstrings.incomeContainer;
                 html = '<div class="item clearfix" id="income-%id%"> <div class="item__description">%description%</div> <div class="right clearfix"><div class="item__value">%value%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>';
-            } else if (type === 'expense') {
+            } else if (type === 'expenses') {
+                element = DOMstrings.expensesContainer;
                 html = '<div class="item clearfix" id="expense-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">%value%</div><div class="item__percentage">21%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>';
             }
             
+            newHtml = html.replace('%id%', obj.id);
+            newHtml = newHtml.replace('%description%', obj.description);
+            newHtml = newHtml.replace('%value%', obj.value);
 
+            document.querySelector(element).insertAdjacentHTML('beforeend', newHtml);
             
         },
 
@@ -118,9 +127,12 @@ var appController = (function(BC, UC) {
         // 1. get the input data
         input = UC.getInput();
         console.log(input);
+
         // 2. add item to the budgetController
         newItem = BC.addItem(input.type, input.description, input.value);
+        
         // 3. add the item to the UI
+        UIController.addListItem(newItem, input.type);
         // 4. calculate budget
         // 5. display the budget on UI
     }
