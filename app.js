@@ -79,7 +79,7 @@ var UIController = (function() {
             return {    // 동시에 3개의 properties를 묶어서 넘기기 위함, so 하나하나 차례로 실행되는 것이 아니라, 동시에 3개가 실행 되게끔
                 type        : document.querySelector(DOMstrings.inputType).value,  // +(income), -(expense) 결정
                 description : document.querySelector(DOMstrings.inputDescription).value,
-                value       : document.querySelector(DOMstrings.inputValue).value
+                value       : parseFloat(document.querySelector(DOMstrings.inputValue).value)
             };  
         },
         addListItem: function(obj, type) {
@@ -137,20 +137,32 @@ var appController = (function(BC, UC) {
         });
     }
 
+    var updateBudget = function() {
+        // 1. calculate budget and return it
+
+
+        // 2. display the budget on UI
+    };
+
     var ctrlAddItem = function() {      // private func.
         var input, newItem;
         // 1. get the input data
         input = UC.getInput();
-        console.log(input);
-
-        // 2. add item to the budgetController
-        newItem = BC.addItem(input.type, input.description, input.value);
         
-        // 3. add the item to the UI
-        UIController.addListItem(newItem, input.type);
-        UIController.clearFields();
-        // 4. calculate budget
-        // 5. display the budget on UI
+        if (input.description !== "" && !isNaN(input.value) && input.value > 0) {
+            // 2. add item to the budgetController
+            newItem = BC.addItem(input.type, input.description, input.value);
+            
+            // 3. add the item to the UI & clear input space
+            UIController.addListItem(newItem, input.type);
+            UIController.clearFields();
+
+            // 4. calculate & update
+            updateBudget();
+        }
+
+
+
     }
 
     return {
