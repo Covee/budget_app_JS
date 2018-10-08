@@ -104,9 +104,13 @@ var UIController = (function() {
         inputBtn: '.add__btn',
         incomeContainer: '.income__list',
         expensesContainer: '.expenses__list',
+        budgetLabel: '.budget__value',
+        incomeLabel: '.budget__income--value',
+        expensesLabel: '.budget__expenses--value',
+        percentageLabel: '.budget__expenses--percentage',
 
+    };
 
-    }
     return {
         getInput: function() {
             return {    // 동시에 3개의 properties를 묶어서 넘기기 위함, so 하나하나 차례로 실행되는 것이 아니라, 동시에 3개가 실행 되게끔
@@ -149,6 +153,18 @@ var UIController = (function() {
             fieldsArr[0].focus();   // focus back to the input space after type in
         },
 
+        displayBudget: function(obj) {
+            document.querySelector(DOMstrings.budgetLabel).textContent = obj.budget + '원';
+            document.querySelector(DOMstrings.incomeLabel).textContent = obj.totalInc + '원';
+            document.querySelector(DOMstrings.expensesLabel).textContent = obj.totalExp + '원';
+
+            if (obj.percentage > 0) {
+                document.querySelector(DOMstrings.percentageLabel).textContent = obj.percentage + '%';
+            } else {
+                document.querySelector(DOMstrings.percentageLabel).textContent = '-';
+            }
+        },
+
         getDOMstrings: function() {     // pass DOMstrings to the app controller
             return DOMstrings;
         }
@@ -174,8 +190,10 @@ var appController = (function(BC, UC) {
         // 1. calculate budget and return it
         budgetController.calculateBudget();
         var budget = budgetController.getBudget();
-        console.log(budget);
+
         // 2. display the budget on UI
+        UIController.displayBudget(budget);
+
     };
 
     var ctrlAddItem = function() {      // private func.
@@ -202,6 +220,12 @@ var appController = (function(BC, UC) {
     return {
         init: function() {
             console.log('앱 시작됨');
+            UIController.displayBudget({
+                budget : 0,
+                totalInc: 0,
+                totalExp: 0,
+                percentage: -1,
+            });
             setupEventListeners();
         }
     }
