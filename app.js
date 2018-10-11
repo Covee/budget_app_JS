@@ -16,6 +16,19 @@ var budgetController = (function() {
         this.id = id;
         this.description = description;
         this.value = value;
+        this.percentage = -1;
+    };
+
+    Expense.prototype.calcPercentage = function(totalIncome){
+        if (totalIncome > 0){
+            this.percentage = Math.round((this.value / totalIncome) * 100);
+        } else {
+            this.percentage = -1;
+        }
+    };
+
+    Expense.prototype.getPercentage = function() {
+        return this.percentage;
     };
 
     var Income = function(id, description, value) {
@@ -93,6 +106,19 @@ var budgetController = (function() {
             
         },
 
+        calculatePercentages: function() {
+            data.allItems.expenses.forEach(function(cur) {
+                cur.calcPercentage(data.totals.income);
+            });
+        },
+
+        getPercentages: function() {
+            var allPerc = data.allItems.expenses.map(function(cur) {
+                return cur.getPercentage();
+            });
+            return allPerc;
+        },
+
         getBudget: function() {
             return {
                 budget : data.budget,
@@ -108,6 +134,7 @@ var budgetController = (function() {
     };
 
 })();
+
 
 // UI controller
 var UIController = (function() {
@@ -153,7 +180,7 @@ var UIController = (function() {
             
         },
 
-        deleteListItem:function(selectorID) {
+        deleteListItem: function(selectorID) {
             var el = document.getElementById(selectorID);
 
             el.parentNode.removeChild(el);
@@ -192,6 +219,7 @@ var UIController = (function() {
     }
 })();
 
+
 // app controller
 var appController = (function(BC, UC) {
 
@@ -220,6 +248,13 @@ var appController = (function(BC, UC) {
 
     };
 
+    var updatePercentages = function() {
+        budgetController.calculatePercentages();
+
+        var percentages = budgetController.getPercentages();
+        console.log(percentages);
+    };
+
     var ctrlAddItem = function() {      // private func.
         var input, newItem;
         // 1. get the input data
@@ -235,6 +270,9 @@ var appController = (function(BC, UC) {
 
             // 4. calculate & update
             updateBudget();
+
+            // calculate percentages and update
+            updatePercentages();
         }
 
     };
