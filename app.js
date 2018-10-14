@@ -153,6 +153,25 @@ var UIController = (function() {
         expensesPercLabel: '.item__percentage'
     };
 
+    // formatting numbers : ex) 12000 => 12,000.0  | decimal(toFixed) & comma seperating
+    var formatNumber = function(num, type){     
+        var type, nums, nsplit, dec;
+
+        num = Math.abs(num);
+        num = num.toFixed(1);
+
+        nsplit = num.split('.');
+        nums = nsplit[0];
+        dec = nsplit[1];
+
+        if (nums.length > 3){
+            nums = nums.substr(0, nums.length - 3) + ',' + nums.substr(nums.length - 3, 3);
+        };
+
+        return (type === 'expenses' ? '-' : '+') + ' ' + nums + '.' + dec;
+
+    };
+
     return {
         getInput: function() {
             return {    // 동시에 3개의 properties를 묶어서 넘기기 위함, so 하나하나 차례로 실행되는 것이 아니라, 동시에 3개가 실행 되게끔
@@ -174,7 +193,7 @@ var UIController = (function() {
             
             newHtml = html.replace('%id%', obj.id);
             newHtml = newHtml.replace('%description%', obj.description);
-            newHtml = newHtml.replace('%value%', obj.value);
+            newHtml = newHtml.replace('%value%', formatNumber(obj.value, type));
 
             document.querySelector(element).insertAdjacentHTML('beforeend', newHtml);
             
@@ -202,9 +221,13 @@ var UIController = (function() {
         },
 
         displayBudget: function(obj) {
-            document.querySelector(DOMstrings.budgetLabel).textContent = obj.budget + '원';
-            document.querySelector(DOMstrings.incomeLabel).textContent = obj.totalInc + '원';
-            document.querySelector(DOMstrings.expensesLabel).textContent = obj.totalExp + '원';
+            var type;
+
+            obj.budget > 0 ? type = 'income' : type = 'expenses';
+
+            document.querySelector(DOMstrings.budgetLabel).textContent = formatNumber(obj.budget, type) + '원';
+            document.querySelector(DOMstrings.incomeLabel).textContent = formatNumber(obj.totalInc, 'income') + '원';
+            document.querySelector(DOMstrings.expensesLabel).textContent = formatNumber(obj.totalExp, 'expenses') + '원';
 
             if (obj.percentage > 0) {
                 document.querySelector(DOMstrings.percentageLabel).textContent = obj.percentage + '%';
