@@ -150,7 +150,9 @@ var UIController = (function() {
         expensesLabel: '.budget__expenses--value',
         percentageLabel: '.budget__expenses--percentage',
         container: '.container',
-        expensesPercLabel: '.item__percentage'
+        expensesPercLabel: '.item__percentage',
+        dateLabel: '.budget__title--month',
+
     };
 
     // formatting numbers : ex) 12000 => 12,000.0  | decimal(toFixed) & comma seperating
@@ -255,6 +257,16 @@ var UIController = (function() {
              
         },
 
+        displayMonth: function() {
+            var now, year, month;
+
+            now = new Date();
+            year = now.getFullYear();
+            month = now.getMonth();
+            document.querySelector(DOMstrings.dateLabel).textContent = year + '년 ' + month + '월 ';
+
+        },
+
         getDOMstrings: function() {     // pass DOMstrings to the app controller
             return DOMstrings;
         }
@@ -343,6 +355,7 @@ var appController = (function(BC, UC) {
     return {
         init: function() {
             console.log('앱 시작됨');
+            UIController.displayMonth();
             UIController.displayBudget({
                 budget : 0,
                 totalInc: 0,
